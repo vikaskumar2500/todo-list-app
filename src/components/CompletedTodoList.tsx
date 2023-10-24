@@ -13,7 +13,7 @@ const CompletedTodoList = () => {
 
   return (
     <div className="flex flex-col items-start justify-start gap-5">
-      <div className="w-full border-b-[1px] flex items-center gap-2 mb-5 p-2">
+      <div className="w-full border-b-[1px] flex items-center gap-2 p-2">
         <h2 className="font-bold text-xl">Completed Task</h2>
         <CheckCircle className="text-green-500" />
       </div>
