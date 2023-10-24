@@ -51,7 +51,7 @@ const AddTodoItem = ({ data }: any) => {
       {!open && (
         <li
           key={data.id}
-          className="flex items-center justify-between w-full border-b-2 lg:hover:bg-slate-100 cursor-pointer lg:group p-2 rounded-xl"
+          className="flex items-center justify-between w-full border-b-2 lg:hover:bg-slate-100 cursor-pointer group p-2 rounded-xl"
         >
           <div className="flex flex-col items-start justify-start gap-2">
             <div
@@ -67,7 +67,7 @@ const AddTodoItem = ({ data }: any) => {
                 onClick={handleCompletedTodo.bind(null, data)}
               >
                 {!checked && <Circle className="w-6 opacity-70" />}
-                {checked && <CheckCircle className="w-6 text-green-500 z-10" />}
+                {checked && <CheckCircle className="lg:block w-6 text-green-500 z-10" />}
               </button>
               <div className="text-base capitalize font-semibold">
                 {data.task_name}
@@ -77,7 +77,7 @@ const AddTodoItem = ({ data }: any) => {
               {data.description}
             </div>
           </div>
-          <div className="lg:hidden flex gap-2 lg:group-hover:flex cursor-pointer mr-2 lg:group-hover:gap-3">
+          <div className="lg:hidden flex gap-2 group-hover:flex cursor-pointer mr-2 lg:group-hover:gap-3">
             <button
               type="button"
               title="delete todo"

@@ -5,7 +5,6 @@ import React, {
   Dispatch,
   FormEvent,
   SetStateAction,
-  useEffect,
   useState,
 } from "react";
 import cuid from "cuid";
@@ -15,13 +14,11 @@ type AddTodoFormProps = {
   setOpenTodo: Dispatch<SetStateAction<boolean>>;
 };
 
-let check: boolean = false;
-
 const AddTodoForm = ({ setOpenTodo }: AddTodoFormProps) => {
   const [taskName, setTaskName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
-  const { addTodos, editTodo, deleteTodo } = useTodo();
+  const { addTodos } = useTodo();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,6 +30,7 @@ const AddTodoForm = ({ setOpenTodo }: AddTodoFormProps) => {
       completed: false,
     };
     addTodos(formData);
+    setOpenTodo(false);
     setDescription("");
     setTaskName("");
   };

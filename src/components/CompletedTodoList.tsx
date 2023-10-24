@@ -17,11 +17,18 @@ const CompletedTodoList = () => {
         <h2 className="font-bold text-xl">Completed Task</h2>
         <CheckCircle className="text-green-500" />
       </div>
-      <ul className="w-full">
-        {completedTodo?.map((data: Todo) => (
-          <CompletedTodoItem key={data.id} data={data} />
-        ))}
-      </ul>
+      {completedTodo !== null && (
+        <ul className="w-full">
+          {completedTodo?.map((data: Todo) => (
+            <CompletedTodoItem key={data.id} data={data} />
+          ))}
+        </ul>
+      )}
+      {(completedTodo === null || completedTodo?.length == 0) && (
+        <p className="flex w-full justify-center items-center text-red-700">
+          Empty completed todo!!
+        </p>
+      )}
     </div>
   );
 };

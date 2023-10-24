@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@prisma/client": "^5.4.2",
+    "@prisma/client": "^5.5.0",
     "cuid": "^3.0.0",
     "lucide-react": "^0.288.0",
     "next": "latest",
@@ -25,7 +25,7 @@
     "eslint": "latest",
     "eslint-config-next": "latest",
     "postcss": "latest",
-    "prisma": "^5.4.2",
+    "prisma": "^5.5.0",
     "tailwindcss": "latest",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"

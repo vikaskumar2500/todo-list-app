@@ -49,11 +49,18 @@ const AddTodoList = () => {
 
   return (
     <div className="flex flex-col items-start justify-start gap-5">
-      <ul className="w-full">
-        {todos?.map((data) => (
-          <AddTodoItem key={data.id} data={data} />
-        ))}
-      </ul>
+      {todos !== null && (
+        <ul className="w-full">
+          {todos?.map((data) => (
+            <AddTodoItem key={data.id} data={data} />
+          ))}
+        </ul>
+      )}
+      {(todos === null || todos?.length == 0) && (
+        <p className="flex w-full justify-center items-center text-red-700">
+          Please add your todo now!
+        </p>
+      )}
       {openAddTodo && <AddTodoForm setOpenTodo={setOpenAddTodo} />}
       {!openAddTodo && (
         <button

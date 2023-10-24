@@ -1,13 +1,6 @@
 "use client";
 
-import React, {
-  ChangeEvent,
-  Dispatch,
-  FormEvent,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import cuid from "cuid";
 import { useTodo } from "@/context-api/todo-context";
 
@@ -15,8 +8,6 @@ type AddTodoEditFormProps = {
   onOpen: (open: boolean) => void;
   editId: string;
 };
-
-let check: boolean = false;
 
 const AddTodoEditForm = ({ onOpen, editId }: AddTodoEditFormProps) => {
   const [taskName, setTaskName] = useState<string>("");
@@ -29,11 +20,9 @@ const AddTodoEditForm = ({ onOpen, editId }: AddTodoEditFormProps) => {
   }, []);
 
   useEffect(() => {
-    // If you have an editTodo, initialize the state with its values
     if (editTodo?.id) {
       setTaskName(editTodo?.task_name);
       setDescription(editTodo?.description);
-      check = true;
     }
   }, []);
 
@@ -55,15 +44,13 @@ const AddTodoEditForm = ({ onOpen, editId }: AddTodoEditFormProps) => {
 
   const handleCancelButton = () => {
     onOpen(false);
-    if (check) {
-      setDescription("");
-      setTaskName("");
-    }
+    setDescription("");
+    setTaskName("");
   };
   return (
     <form
       onSubmit={(e: FormEvent<HTMLFormElement>) => handleSubmit(e)}
-      className="relative flex flex-col h-[150px] w-full ring-2 ring-offset-slate-400 rounded-lg mt-3 items-start p-3 gap-5"
+      className="relative flex flex-col h-[120px] w-full ring-2 ring-offset-slate-400 rounded-lg mt-3 items-start p-3 gap-5"
     >
       <input
         id="taskname"
@@ -83,11 +70,11 @@ const AddTodoEditForm = ({ onOpen, editId }: AddTodoEditFormProps) => {
           setDescription(e.target.value)
         }
       />
-      <hr className="absolute border-spacing-2 bg-slate-700/90 left-0 w-full top-[100px]" />
-      <div className="absolute right-5 bottom-1  flex items-end justify-end gap-3 mb-1 ">
+      <hr className="absolute border-spacing-2 bg-slate-700/90 left-0 w-full top-[80px]" />
+      <div className="absolute right-5 bottom-1  flex items-end justify-end gap-3 ">
         <button
           type="button"
-          className="border rounded-md px-2 py-[0.15rem] bg-slate-100 text-black"
+          className="border rounded-md px-2 py-[0.07rem] bg-slate-100 text-black"
           onClick={handleCancelButton}
         >
           Cancel
@@ -99,7 +86,7 @@ const AddTodoEditForm = ({ onOpen, editId }: AddTodoEditFormProps) => {
               ? "Add your todo"
               : "please write your todo!"
           }`}
-          className={`border rounded-md px-2 py-[0.15rem]  text-slate-100 ${
+          className={`border rounded-md px-2 py-[0.07rem]  text-slate-100 ${
             taskName.length > 0
               ? "cursor-pointer bg-red-700"
               : "cursor-not-allowed bg-red-500/40"
