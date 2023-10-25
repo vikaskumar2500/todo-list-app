@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.5.0",
+    "@vercel/postgres": "^0.5.0",
     "cuid": "^3.0.0",
     "lucide-react": "^0.288.0",
     "next": "latest",
