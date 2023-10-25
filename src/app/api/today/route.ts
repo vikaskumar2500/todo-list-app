@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Prisma, PrismaClient } from "@prisma/client";
-import { DefaultArgs } from "@prisma/client/runtime/library";
+import { PrismaClient } from "@prisma/client";
 
-const prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs> =
-  new PrismaClient();
+const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
   const data = await prisma.todo.findMany({
