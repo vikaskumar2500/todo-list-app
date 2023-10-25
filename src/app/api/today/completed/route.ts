@@ -1,7 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { DefaultArgs } from "@prisma/client/runtime/library";
 import { NextRequest, NextResponse } from "next/server";
 
-const prisma = new PrismaClient();
+const prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs> =
+  new PrismaClient();
 
 export async function GET(req: NextRequest) {
   const res = await prisma.todo.findMany({

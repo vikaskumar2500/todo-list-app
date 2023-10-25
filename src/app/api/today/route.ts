@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { DefaultArgs } from "@prisma/client/runtime/library";
 
-const prisma = new PrismaClient();
+const prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs> =
+  new PrismaClient();
 
 export async function GET(req: NextRequest) {
   const data = await prisma.todo.findMany({
@@ -22,7 +24,6 @@ export async function POST(req: NextRequest) {
   });
   return NextResponse.json(response);
 }
-
 
 export async function DELETE(req: NextRequest) {
   const { id }: { id: string } = await req.json();
