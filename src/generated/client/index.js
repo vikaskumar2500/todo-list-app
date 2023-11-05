@@ -31,11 +31,11 @@ exports.$Enums = {}
 
 /**
  * Prisma Client JS version: 5.5.0
- * Query Engine version: aebc046ce8b88ebbcb45efe31cbe7d06fd6abc0a
+ * Query Engine version: 475c616176945d72f4330c92801f0c5e6398dc0f
  */
 Prisma.prismaVersion = {
   client: "5.5.0",
-  engine: "aebc046ce8b88ebbcb45efe31cbe7d06fd6abc0a"
+  engine: "475c616176945d72f4330c92801f0c5e6398dc0f"
 }
 
 Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError;
@@ -141,7 +141,7 @@ const config = {
   },
   "relativePath": "../../../prisma",
   "clientVersion": "5.5.0",
-  "engineVersion": "aebc046ce8b88ebbcb45efe31cbe7d06fd6abc0a",
+  "engineVersion": "475c616176945d72f4330c92801f0c5e6398dc0f",
   "datasourceNames": [
     "db"
   ],
@@ -150,13 +150,13 @@ const config = {
   "inlineDatasources": {
     "db": {
       "url": {
-        "fromEnvVar": "DATABASE_URL",
+        "fromEnvVar": "NEXT_PUBLIC_POSTGRES_PRISMA_URL",
         "value": null
       }
     }
   },
-  "inlineSchema": "Ly8gVGhpcyBpcyB5b3VyIFByaXNtYSBzY2hlbWEgZmlsZSwKLy8gbGVhcm4gbW9yZSBhYm91dCBpdCBpbiB0aGUgZG9jczogaHR0cHM6Ly9wcmlzLmx5L2QvcHJpc21hLXNjaGVtYQoKZ2VuZXJhdG9yIGNsaWVudCB7CiAgcHJvdmlkZXIgPSAicHJpc21hLWNsaWVudC1qcyIKICBvdXRwdXQgICA9ICIuLi9zcmMvZ2VuZXJhdGVkL2NsaWVudCIKfQoKZGF0YXNvdXJjZSBkYiB7CiAgcHJvdmlkZXIgPSAicG9zdGdyZXNxbCIKICB1cmwgICAgICA9IGVudigiREFUQUJBU0VfVVJMIikKfQoKbW9kZWwgVG9kbyB7CiAgaWQgICAgICAgICAgU3RyaW5nICBAaWQgQGRlZmF1bHQoY3VpZCgpKQogIHRhc2tfbmFtZSAgIFN0cmluZwogIGRlc2NyaXB0aW9uIFN0cmluZwogIGNvbXBsZXRlZCAgIEJvb2xlYW4KfQo=",
-  "inlineSchemaHash": "a8b75db6e7e5030a6c718057f95c381ff13444fefbf81e9afc0c66a3552f1286",
+  "inlineSchema": "Ly8gVGhpcyBpcyB5b3VyIFByaXNtYSBzY2hlbWEgZmlsZSwKLy8gbGVhcm4gbW9yZSBhYm91dCBpdCBpbiB0aGUgZG9jczogaHR0cHM6Ly9wcmlzLmx5L2QvcHJpc21hLXNjaGVtYQoKZ2VuZXJhdG9yIGNsaWVudCB7CiAgcHJvdmlkZXIgPSAicHJpc21hLWNsaWVudC1qcyIKICBvdXRwdXQgICA9ICIuLi9zcmMvZ2VuZXJhdGVkL2NsaWVudCIKfQoKZGF0YXNvdXJjZSBkYiB7CiAgcHJvdmlkZXIgID0gInBvc3RncmVzcWwiCiAgdXJsICAgICAgID0gZW52KCJORVhUX1BVQkxJQ19QT1NUR1JFU19QUklTTUFfVVJMIikgLy8gdXNlcyBjb25uZWN0aW9uIHBvb2xpbmcKICBkaXJlY3RVcmwgPSBlbnYoIk5FWFRfUFVCTElDX1BPU1RHUkVTX1VSTF9OT05fUE9PTElORyIpIC8vIHVzZXMgYSBkaXJlY3QgY29ubmVjdGlvbgp9Cgptb2RlbCBUb2RvIHsKICBpZCAgICAgICAgICBTdHJpbmcgIEBpZCBAZGVmYXVsdChjdWlkKCkpCiAgdGFza19uYW1lICAgU3RyaW5nCiAgZGVzY3JpcHRpb24gU3RyaW5nCiAgY29tcGxldGVkICAgQm9vbGVhbgp9Cg==",
+  "inlineSchemaHash": "f062cad068bcbbda9e7403d536b45008a76b7ab279f51dc782705f332ae3a843",
   "noEngine": false
 }
 
