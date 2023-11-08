@@ -6,13 +6,12 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("NEXT_PUBLIC_POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("NEXT_PUBLIC_POSTGRES_URL_NON_POOLING") // uses a direct connection
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 model Todo {
-  id          String  @id @default(cuid())
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
   task_name   String
   description String
   completed   Boolean

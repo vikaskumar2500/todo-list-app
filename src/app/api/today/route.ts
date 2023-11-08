@@ -1,8 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-
-
 export async function GET(req: NextRequest) {
   const data = await prisma.todo.findMany({
     where: { completed: false },
@@ -13,14 +11,14 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const { completed, description, task_name } = await req.json();
-  const response = await prisma.todo.create({
+  const data = await prisma.todo.create({
     data: {
       completed,
       description,
       task_name,
     },
   });
-  return NextResponse.json(response);
+  return NextResponse.json(data);
 }
 
 export async function DELETE(req: NextRequest) {

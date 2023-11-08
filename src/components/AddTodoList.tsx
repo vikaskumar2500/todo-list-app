@@ -13,26 +13,6 @@ export type todoType = {
   completed: boolean;
 };
 
-// const todoData: todoType[] = [
-//   {
-//     id: "1",
-//     task_name: "complete dsa",
-//     description: "with in one week",
-//     completed: false,
-//   },
-//   {
-//     id: "3",
-//     task_name: "complete dsa",
-//     description: "with in one week",
-//     completed: false,
-//   },
-//   {
-//     id: "5",
-//     task_name: "complete dsa",
-//     description: "with in one week",
-//     completed: false,
-//   },
-// ];
 type AddTodoProps = {
   // onAddTodo: (todoData: todoType) =>void;
   todoData: todoType[] | null;
@@ -41,12 +21,10 @@ type AddTodoProps = {
 const AddTodoList = () => {
   const [openAddTodo, setOpenAddTodo] = useState<boolean>(false);
 
-  const { fetchTodos, todos } = useTodo();
-
+  const { todos, fetchTodos } = useTodo();
   useEffect(() => {
     fetchTodos();
   }, []);
-
   return (
     <div className="flex flex-col items-start justify-start gap-5">
       {todos !== null && (
