@@ -1,21 +1,28 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { CheckCircle, Circle, Pencil, PencilLine, Trash2 } from "lucide-react";
+import {
+  CheckCircle,
+  Circle,
+  Loader2,
+  Pencil,
+  PencilLine,
+  Trash2,
+} from "lucide-react";
 import { Todo, useTodo } from "@/context-api/todo-context";
-import AddTodoForm from "./AddTodoForm";
 import AddTodoEditForm from "./AddTodoEditForm";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import ConfirmationDelete from "@/utils/ConfirmationDelete";
 
 const AddTodoItem = ({ data }: any) => {
   const [checked, setChecked] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
   const [editId, setEditId] = useState<string>("");
+  const [isDelete, setIsDelete] = useState<boolean>(false);
+  const [id, setId] = useState<string>("");
 
-  useEffect(() => {
-    fetchTodos();
-  }, []);
-  const { deleteTodo, fetchTodos, todos, addEditTodo, addTodos, addTodo } =
-    useTodo();
+  const { deleteTodo, todos, addEditTodo } = useTodo();
 
   const handleCheckOverCapture = () => {
     setChecked(true);
@@ -24,27 +31,66 @@ const AddTodoItem = ({ data }: any) => {
     setChecked(false);
   };
 
-  const handleCompletedTodo = (todo: Todo) => {
-    deleteTodo(todo.id);
-    const updatedTodo: Todo = { ...todo, completed: true };
-    addTodos(updatedTodo);
-    fetchTodos();
+  const queryClient = useQueryClient();
+
+  // Mutations
+  const { mutateAsync: deleteTodsMutate } = useMutation({
+    mutationKey: ["delete", "todo"],
+    mutationFn: async (id: string) => await deleteTodo(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+
+      toast.success("Deleted!");
+    },
+  });
+
+  const { mutateAsync: completeTodoMutate, isPending: isCompletedPending } =
+    useMutation({
+      mutationKey: ["complete", "todo"],
+      mutationFn: async (todo: Todo) =>
+        await fetch("/api/today", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...todo, completed: true }),
+        }),
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ["todos"] });
+        toast.success("Completed!");
+      },
+    });
+  const handleDeleteTodo = async (id: string) => {
+    setIsDelete(true);
+    setId(() => id);
   };
 
-  const handleDeleteTodo = (id: string) => {
-    deleteTodo(id);
-    fetchTodos();
+  const handleCompletedTodo = async (todo: Todo) => {
+    await completeTodoMutate(todo);
   };
 
-  const handleEditTodo = (id: string) => {
-    const todo = todos?.filter((todo) => todo.id === id);
-    addEditTodo(todo?.at(0) as Todo);
+  const handleEditTodo = (data: Todo) => {
+    addEditTodo(data);
     setEditId(() => id);
     setOpen(() => true);
   };
 
   const handleOpen = (isOpen: boolean) => {
     setOpen(isOpen);
+  };
+
+  const handleConfirmationDelete = async (isTrue: boolean) => {
+    if (!isTrue) {
+      setIsDelete(false);
+      return;
+    }
+    try {
+      await deleteTodsMutate(id);
+      setId("");
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong! please try again leter!");
+    } finally {
+      setIsDelete(false);
+    }
   };
   return (
     <div>
@@ -66,8 +112,15 @@ const AddTodoItem = ({ data }: any) => {
                 onMouseOutCapture={handleCheckOutCaputure}
                 onClick={handleCompletedTodo.bind(null, data)}
               >
-                {!checked && <Circle className="w-6 opacity-70" />}
-                {checked && <CheckCircle className="lg:block w-6 text-green-500 z-10" />}
+                {isCompletedPending && (
+                  <Loader2 className="w-6 h-6 text-blue-500 rounded-full animate-spin" />
+                )}
+                {!checked && !isCompletedPending && (
+                  <Circle className="w-6 opacity-70" />
+                )}
+                {checked && !isCompletedPending && (
+                  <CheckCircle className="lg:block w-6 text-green-500 z-10" />
+                )}
               </button>
               <div className="text-base capitalize font-semibold">
                 {data.task_name}
@@ -90,7 +143,7 @@ const AddTodoItem = ({ data }: any) => {
               type="button"
               title="edit todo"
               className="p-2 rounded-full lg:hover:bg-slate-200"
-              onClick={handleEditTodo.bind(null, data.id)}
+              onClick={handleEditTodo.bind(null, data)}
             >
               <PencilLine className="w-6 text-green-600" />
             </button>
@@ -98,6 +151,7 @@ const AddTodoItem = ({ data }: any) => {
         </li>
       )}
       {open && <AddTodoEditForm onOpen={handleOpen} editId={editId} />}
+      {isDelete && <ConfirmationDelete onClick={handleConfirmationDelete} />}
     </div>
   );
 };

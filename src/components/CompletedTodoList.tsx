@@ -1,22 +1,34 @@
 "use client";
 import { Todo, useTodo } from "@/context-api/todo-context";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Loader2 } from "lucide-react";
 import React, { useEffect } from "react";
 import CompletedTodoItem from "./CompletedTodoItem";
+import { useQuery } from "@tanstack/react-query";
 
 const CompletedTodoList = () => {
-  const { completedTodo, fetchCompltedTodo } = useTodo();
+  const { fetchCompltedTodo } = useTodo();
 
-  useEffect(() => {
-    fetchCompltedTodo();
-  }, []);
+  const { data: completedTodo, isLoading } = useQuery({
+    queryKey: ["completed", "todos"],
+    queryFn: async () => {
+      const res = await fetch("/api/today/completed", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      return await res.json();
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center w-full">
+        <Loader2 className=" text-blue-500 w-10 h-10 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-start justify-start gap-5">
-      <div className="w-full border-b-[1px] flex items-center gap-2 p-2">
-        <h2 className="font-bold text-xl">Completed Task</h2>
-        <CheckCircle className="text-green-500" />
-      </div>
       {completedTodo !== null && (
         <ul className="w-full">
           {completedTodo?.map((data: Todo) => (

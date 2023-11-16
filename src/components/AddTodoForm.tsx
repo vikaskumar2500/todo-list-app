@@ -8,7 +8,14 @@ import React, {
   useState,
 } from "react";
 import cuid from "cuid";
-import { useTodo } from "@/context-api/todo-context";
+import { Todo, useTodo } from "@/context-api/todo-context";
+import {
+  InvalidateQueryFilters,
+  QueryClient,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 
 type AddTodoFormProps = {
   setOpenTodo: Dispatch<SetStateAction<boolean>>;
@@ -19,26 +26,34 @@ const AddTodoForm = ({ setOpenTodo }: AddTodoFormProps) => {
   const [description, setDescription] = useState<string>("");
 
   const { addTodos } = useTodo();
+  const queryClient = useQueryClient();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (taskName.trim().length === 0) return;
-    const formData = {
-      task_name: taskName,
-      description: description,
-      id: cuid(),
-      completed: false,
-    };
-    addTodos(formData);
-    setOpenTodo(false);
-    setDescription("");
-    setTaskName("");
-  };
+  const { mutateAsync, isPending } = useMutation({
+    mutationKey: ["form", "todos"],
+    mutationFn: async () => {
+      await addTodos({
+        task_name: taskName,
+        description,
+        id: cuid(),
+        completed: false,
+      });
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      setOpenTodo(false);
+      setDescription("");
+      setTaskName("");
+    },
+  });
 
   return (
     <form
-      onSubmit={handleSubmit}
-      className="relative flex flex-col h-[150px] w-full ring-2 ring-offset-slate-400 rounded-lg mt-3 items-start p-3 gap-5"
+      onSubmit={async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData: FormData = new FormData(event.currentTarget);
+        await mutateAsync(formData as unknown as void);
+      }}
+      className="relative flex flex-col h-[150px] mb-5a w-full ring-2 ring-offset-slate-400 rounded-xl mt-3 items-start p-3 gap-5"
     >
       <input
         id="taskname"
@@ -62,7 +77,7 @@ const AddTodoForm = ({ setOpenTodo }: AddTodoFormProps) => {
       <div className="absolute right-5 bottom-1  flex items-end justify-end gap-3 mb-1 ">
         <button
           type="button"
-          className="border rounded-md px-2 py-[0.15rem] bg-slate-100 text-black"
+          className="border rounded-[8px] px-2 py-[0.15rem] bg-slate-100 text-black"
           onClick={() => setOpenTodo(false)}
         >
           Cancel
@@ -74,13 +89,14 @@ const AddTodoForm = ({ setOpenTodo }: AddTodoFormProps) => {
               ? "Add your todo"
               : "please write your todo!"
           }`}
-          className={`border rounded-md px-2 py-[0.15rem]  text-slate-100 ${
+          className={` flex items-center border text-center rounded-[8px] px-2 py-[0.15rem]  text-slate-100 ${
             taskName.length > 0
               ? "cursor-pointer bg-red-700"
               : "cursor-not-allowed bg-red-500/40"
           }`}
         >
-          Add task
+          {isPending && <Loader2 className=" text-center w-6 h-6 animate-spin" />}
+          {!isPending && <p>Add task</p>}
         </button>
       </div>
     </form>

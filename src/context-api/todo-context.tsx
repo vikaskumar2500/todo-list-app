@@ -7,6 +7,7 @@ import {
   useContext,
   useState,
 } from "react";
+import { toast } from "react-toast";
 
 export type Todo = {
   id: string;
@@ -19,13 +20,13 @@ export type todoState = {
   todos: Todo[] | null;
   addTodo: (todo: Todo) => void;
   addEditTodo: (todo: Todo) => void;
-  fetchTodos: () => Promise<void>;
+  fetchTodos: () => Promise<Todo[]>;
   addTodos: (todos: Todo) => Promise<void>;
   deleteTodo: (id: string) => Promise<void>;
   editTodo: Todo;
   completedTodo: Todo[] | null;
   addCompletedTodo: (todo: Todo) => void;
-  fetchCompltedTodo: () => Promise<void>;
+  fetchCompltedTodo: () => Promise<Todo[]>;
   deleteCompletedTodo: (id: string) => Promise<void>;
 };
 
@@ -54,13 +55,14 @@ const TodoProvider = ({ children }: { children: React.ReactNode }) => {
       const res = await fetch("/api/today", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
-
       });
       const data = await res.json();
 
       setTodos(data);
+      return data;
     } catch (error) {
       console.error(error);
+      return [];
     }
   };
 
@@ -73,6 +75,7 @@ const TodoProvider = ({ children }: { children: React.ReactNode }) => {
       });
       const data = await res.json();
       addTodo(data);
+      
     } catch (error) {
       console.log(error);
     }
@@ -96,10 +99,13 @@ const TodoProvider = ({ children }: { children: React.ReactNode }) => {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
+      if (!res.ok) throw new Error("Something went wrong!!");
       const data = await res.json();
       setCompletedTodo(() => data);
-    } catch (error) {
+      return data;
+    } catch (error: any) {
       console.log(error);
+      toast.error(error.message);
     }
   };
 

@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
 import AddTodoItem from "./AddTodoItem";
 import AddTodoForm from "./AddTodoForm";
 import { useTodo } from "@/context-api/todo-context";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 export type todoType = {
   id: string;
@@ -21,15 +22,32 @@ type AddTodoProps = {
 const AddTodoList = () => {
   const [openAddTodo, setOpenAddTodo] = useState<boolean>(false);
 
-  const { todos, fetchTodos } = useTodo();
-  useEffect(() => {
-    fetchTodos();
-  }, []);
+  const { data: todos, isLoading } = useQuery({
+    queryKey: ["todos"],
+    queryFn: async () => {
+      console.log("query function running");
+      const res = await fetch("/api/today", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      return await res.json();
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center w-full">
+        <Loader2 className=" text-blue-500 w-10 h-10 animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col items-start justify-start gap-5">
+    <div className="flex flex-col items-start justify-start gap-5 mb-10">
       {todos !== null && (
         <ul className="w-full">
-          {todos?.map((data) => (
+          {todos?.map((data: any) => (
             <AddTodoItem key={data.id} data={data} />
           ))}
         </ul>
@@ -44,9 +62,9 @@ const AddTodoList = () => {
         <button
           type="button"
           onClick={() => setOpenAddTodo(true)}
-          className="mt-3 group flex items-center justify-center gap-1"
+          className="mt-3 mb-5 group flex items-center justify-center gap-1"
         >
-          <Plus className="w-5 h-5 rounded-full lg:group-hover:text-white lg:group-hover:bg-red-600 bg-red-600 text-white" />
+          <Plus className="w-5 h-5 rounded-full lg:group-hover:text-white lg:group-hover:bg-red-600 border" />
           <span className="font-semibold">Add Task</span>
         </button>
       )}

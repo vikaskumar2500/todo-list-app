@@ -3,6 +3,14 @@
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import cuid from "cuid";
 import { useTodo } from "@/context-api/todo-context";
+import {
+  InvalidateQueryFilters,
+  QueryClient,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { Todo } from "@prisma/client";
+import { Loader2 } from "lucide-react";
 
 type AddTodoEditFormProps = {
   onOpen: (open: boolean) => void;
@@ -13,34 +21,38 @@ const AddTodoEditForm = ({ onOpen, editId }: AddTodoEditFormProps) => {
   const [taskName, setTaskName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
-  const { addTodos, editTodo, deleteTodo, fetchTodos } = useTodo();
-
-  useEffect(() => {
-    fetchTodos();
-  }, []);
+  const { editTodo } = useTodo();
 
   useEffect(() => {
     if (editTodo?.id) {
       setTaskName(editTodo?.task_name);
       setDescription(editTodo?.description);
     }
-  }, []);
+  }, [editTodo?.id]);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    deleteTodo(editId);
-    fetchTodos();
-    const formData = {
-      task_name: taskName,
-      description: description,
-      id: cuid(),
-      completed: false,
-    };
-    addTodos(formData);
-    setDescription("");
-    setTaskName("");
-    onOpen(false);
-  };
+  const queryClient = useQueryClient();
+
+  const { mutateAsync, isPending } = useMutation({
+    mutationKey: ["edit", "form", "todos"],
+    mutationFn: async () =>
+      await fetch("/api/today", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: editTodo.id,
+          completed: false,
+          task_name: taskName,
+          description,
+        }),
+      }),
+    onSuccess: () => {
+      console.log("Edit form Running");
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      setDescription("");
+      setTaskName("");
+      onOpen(false);
+    },
+  });
 
   const handleCancelButton = () => {
     onOpen(false);
@@ -49,7 +61,11 @@ const AddTodoEditForm = ({ onOpen, editId }: AddTodoEditFormProps) => {
   };
   return (
     <form
-      onSubmit={(e: FormEvent<HTMLFormElement>) => handleSubmit(e)}
+      onSubmit={async (event) => {
+        event.preventDefault();
+        const formData: FormData = new FormData(event.currentTarget);
+        await mutateAsync(formData as unknown as void);
+      }}
       className="relative flex flex-col h-[120px] w-full ring-2 ring-offset-slate-400 rounded-lg mt-3 items-start p-3 gap-5"
     >
       <input
@@ -74,7 +90,7 @@ const AddTodoEditForm = ({ onOpen, editId }: AddTodoEditFormProps) => {
       <div className="absolute right-5 bottom-1  flex items-end justify-end gap-3 ">
         <button
           type="button"
-          className="border rounded-md px-2 py-[0.07rem] bg-slate-100 text-black"
+          className="border rounded-[7px] px-2 py-[0.07rem] bg-slate-100 text-black"
           onClick={handleCancelButton}
         >
           Cancel
@@ -86,13 +102,16 @@ const AddTodoEditForm = ({ onOpen, editId }: AddTodoEditFormProps) => {
               ? "Add your todo"
               : "please write your todo!"
           }`}
-          className={`border rounded-md px-2 py-[0.07rem]  text-slate-100 ${
+          className={`border rounded-[7px] px-2 py-[0.07rem]  text-slate-100 ${
             taskName.length > 0
               ? "cursor-pointer bg-red-700"
               : "cursor-not-allowed bg-red-500/40"
           }`}
         >
-          Add task
+          {isPending && (
+            <Loader2 className=" text-center w-5 h-6 animate-spin" />
+          )}
+          {!isPending && <p>Add task</p>}
         </button>
       </div>
     </form>

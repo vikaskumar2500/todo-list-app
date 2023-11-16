@@ -1,19 +1,58 @@
 "use client";
 
 import { Todo, useTodo } from "@/context-api/todo-context";
-import { CheckCircle, PencilLine, Trash2 } from "lucide-react";
-import React from "react";
+import ConfirmationDelete from "@/utils/ConfirmationDelete";
+import {
+  InvalidateQueryFilters,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { CheckCircle, Loader2, PencilLine, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 type todoType = {
   data: Todo;
 };
 
 const CompletedTodoItem = ({ data }: todoType) => {
-  const { deleteCompletedTodo, fetchCompltedTodo } = useTodo();
-  const handleDeleteTodo = (id: string) => {
-    deleteCompletedTodo(id);
-    fetchCompltedTodo();
+  const [id, setId] = useState<string>("");
+  const [isDelete, setIsDelete] = useState<boolean>(false);
+  const { deleteCompletedTodo } = useTodo();
+
+  // Access the client
+  const queryClient = useQueryClient();
+
+  // Mutations
+  const { mutateAsync, isPending } = useMutation({
+    mutationKey: ["completed"],
+    mutationFn: async (id: string) => await deleteCompletedTodo(id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["completed", "todos"] });
+      toast.success("deleted task!");
+    },
+  });
+  const handleDeleteTodo = async (id: string) => {
+    setIsDelete(true);
+    setId(id);
   };
+
+  const handleConfirmationDelete = async (isTrue: boolean) => {
+    if (!isTrue) {
+      setIsDelete(false);
+      return;
+    }
+    try {
+      await mutateAsync(id);
+      setId("");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsDelete(false);
+    }
+  };
+
   return (
     <li
       key={data.id}
@@ -43,8 +82,9 @@ const CompletedTodoItem = ({ data }: todoType) => {
         className="p-2 rounded-full lg:hover:bg-slate-200 mr-2 lg:mr-0"
         onClick={handleDeleteTodo.bind(null, data.id)}
       >
-        <Trash2 className="w-6 text-red-500" />
+      <Trash2 className="w-6 text-red-500" />
       </button>
+      {isDelete && <ConfirmationDelete onClick={handleConfirmationDelete} />}
     </li>
   );
 };
